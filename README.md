@@ -1,5 +1,15 @@
 # errors
 
+<p align="center">
+  <img src="https://github.com/fogesque/errors/blob/main/logo.png?raw=true" alt="C++ errors logo" width="320"/>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/C%2B%2B-17%2F20%2F23-blue.svg?logo=c%2B%2B&logoColor=white" alt="C++ Standard"/>
+  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"/>
+  <img src="https://img.shields.io/badge/Build-Linux-blue.svg" alt="Linux Build"/>
+</p>
+
 A modern C++ error handling package inspired by Go's error concept. This library provides transparent, composable, and type-safe error management for C++ projects, making error handling more robust and expressive.
 
 ## Features
