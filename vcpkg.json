@@ -1,6 +1,6 @@
 {
     "name": "errors",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A modern C++ error handling library inspired by Go's error concept",
     "homepage": "https://github.com/fogesque/errors",
     "license": "MIT",

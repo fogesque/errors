@@ -46,6 +46,46 @@ sudo apt install ninja-build
 
 See [vcpkg Quick Start](https://github.com/microsoft/vcpkg#quick-start) for setting up vcpkg.
 
+## vcpkg Integration
+
+This project uses vcpkg for dependency management and provides an overlay port for easy integration into other projects.
+
+### Using errors in Your vcpkg Project
+
+To use the `errors` library in your own project via vcpkg, you must use the provided overlay port located in the `vcpkg-overlays` directory.
+
+1. **Add the overlay port to your vcpkg command:**
+	```bash
+	vcpkg install errors --overlay-ports=/path/to/errors/vcpkg-overlays
+	```
+
+2. **Or configure it in your `vcpkg-configuration.json`:**
+	```json
+	{
+	  "overlay-ports": ["path/to/errors/vcpkg-overlays"]
+	}
+	```
+
+3. **Add errors to your project's `vcpkg.json`:**
+	```json
+	{
+	  "dependencies": [
+	    "errors"
+	  ]
+	}
+	```
+
+4. **Use in CMake:**
+	```cmake
+	find_package(errors CONFIG REQUIRED)
+	target_link_libraries(your_target PRIVATE errors::errors)
+	```
+
+5. **Include in your C++ code:**
+	```cpp
+	#include <errors/errors.hpp>
+	```
+
 ## Building the Project
 
 1. **Clone the repository and initialize vcpkg dependencies:**
@@ -58,6 +98,11 @@ See [vcpkg Quick Start](https://github.com/microsoft/vcpkg#quick-start) for sett
 2. **Configure the project with CMake**
 	```bash
 	cmake -S . -B build
+	```
+
+	Or use the vcpkg preset:
+	```bash
+	cmake --preset=vcpkg
 	```
 
 3. **Build examples and tests:**

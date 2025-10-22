@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(errors VERSION 1.0.0 LANGUAGES CXX)
+project(errors VERSION 1.0.1 LANGUAGES CXX)
 
 # Header-only library target
 add_library(errors INTERFACE)
