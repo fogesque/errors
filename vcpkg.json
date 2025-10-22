@@ -1,5 +1,9 @@
 {
-  "dependencies": [
-    "gtest"
-  ]
+    "name": "errors",
+    "version": "1.0.0",
+    "description": "A modern C++ error handling library inspired by Go's error concept",
+    "homepage": "https://github.com/fogesque/errors",
+    "license": "MIT",
+    "supports": "!(uwp | arm)",
+    "dependencies": []
 }
