@@ -4,6 +4,7 @@
 #define ERRORS_HPP
 
 #include <cstdio>
+#include <format>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -61,7 +62,7 @@ public:
     explicit StringError(std::string msg) : message(std::move(msg)) {}
     [[nodiscard]] std::string What() const override
     {
-        return message;
+        return this->message;
     }
 };
 
@@ -73,14 +74,14 @@ public:
 class WrappedError : public Error
 {
 private:
-    std::string msg;
+    std::string message;
     error err;
 
 public:
-    WrappedError(std::string m, error e) : msg(std::move(m)), err(std::move(e)) {}
+    WrappedError(std::string msg, error e) : message(std::move(msg)), err(std::move(e)) {}
     [[nodiscard]] std::string What() const override
     {
-        return msg + ": " + err->What();
+        return this->message + ": " + err->What();
     }
     [[nodiscard]] error Unwrap() const override
     {
@@ -105,7 +106,7 @@ public:
         for (size_t i = 0; i < errs.size(); ++i) {
             ss << errs[i]->What();
             if (i < errs.size() - 1) {
-                ss << "\n";
+                ss << "; ";
             }
         }
         return ss.str();
@@ -121,53 +122,58 @@ public:
 /**
  * @brief Creates a new error with the given text message.
  */
-inline error New(const std::string & text)
+inline error New(const std::string & message)
 {
-    return std::make_shared<StringError>(text);
+    return std::make_shared<StringError>(message);
 }
 
 /**
  * @brief Creates a new error with a formatted message.
  */
 template <typename... Args>
-error Errorf(const char * format, Args... args)
+error Errorf(const std::format_string<Args...> & fmt, Args &&... args)
 {
-    int size = std::snprintf(nullptr, 0, format, args...);
-    if (size < 0) {
-        return New("errors::Errorf: invalid format");
+    try {
+        auto msg = std::format(fmt, std::forward<Args>(args)...);
+        return errors::New(msg);
+    } catch (const std::format_error & e) {
+        return errors::New(std::string("errors::Errorf(): invalid format: ") + e.what());
     }
-    std::vector<char> buf(static_cast<size_t>(size) + 1);
-    std::snprintf(buf.data(), buf.size(), format, args...);
-    return std::make_shared<StringError>(std::string(buf.data(), static_cast<size_t>(size)));
 }
 
 /**
  * @brief Wraps an existing error with a static message.
+ *
+ * @note If the provided error is nullptr, a new error is created with the
+ * given message.
  */
 inline error Wrap(error err, const std::string & msg)
 {
     if (err == nullptr) {
-        return nullptr;
+        return errors::New(msg);
     }
     return std::make_shared<WrappedError>(msg, err);
 }
 
 /**
  * @brief Wraps an existing error with a formatted message.
+ *
+ * @note If the provided error is nullptr, a new error is created with the
+ * formatted message.
  */
 template <typename... Args>
-error Wrapf(error err, const char * format, Args... args)
+error Wrapf(error err, const std::format_string<Args...> & fmt, Args &&... args)
 {
     if (err == nullptr) {
-        return nullptr;
+        return errors::Errorf(fmt, std::forward<Args>(args)...);
     }
-    int size = std::snprintf(nullptr, 0, format, args...);
-    if (size < 0) {
-        return Wrap(err, "errors::Wrapf: invalid format");
+
+    try {
+        std::string msg = std::format(fmt, std::forward<Args>(args)...);
+        return errors::Wrap(err, msg);
+    } catch (const std::format_error & e) {
+        return errors::Wrap(err, std::string("errors::Wrapf(): invalid format: ") + e.what());
     }
-    std::vector<char> buf(static_cast<size_t>(size) + 1);
-    std::snprintf(buf.data(), buf.size(), format, args...);
-    return std::make_shared<WrappedError>(std::string(buf.data(), static_cast<size_t>(size)), err);
 }
 
 /**
