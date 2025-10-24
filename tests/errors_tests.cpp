@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "errors.hpp"
+#include "errors/errors.hpp"
 
 TEST(ErrorsTests, NewCreatesStringError)
 {
@@ -13,7 +13,7 @@ TEST(ErrorsTests, NewCreatesStringError)
 
 TEST(ErrorsTests, ErrorfCreatesFormattedStringError)
 {
-    auto err = errors::Errorf("code %d: %s", 42, "fail");
+    auto err = errors::Errorf("code {}: {}", 42, "fail");
     ASSERT_NE(err, nullptr);
     EXPECT_EQ(err->What(), "code 42: fail");
 }
@@ -30,7 +30,7 @@ TEST(ErrorsTests, WrapAddsContext)
 TEST(ErrorsTests, WrapfAddsFormattedContext)
 {
     auto base = errors::New("base");
-    auto wrapped = errors::Wrapf(base, "context %d", 7);
+    auto wrapped = errors::Wrapf(base, "context {}", 7);
     ASSERT_NE(wrapped, nullptr);
     EXPECT_EQ(wrapped->What(), "context 7: base");
     EXPECT_EQ(wrapped->Unwrap(), base);
@@ -42,13 +42,13 @@ TEST(ErrorsTests, JoinCombinesMultipleErrors)
     auto e2 = errors::New("err2");
     auto joined = errors::Join(e1, e2);
     ASSERT_NE(joined, nullptr);
-    auto joined_str = joined->What();
-    EXPECT_NE(joined_str.find("err1"), std::string::npos);
-    EXPECT_NE(joined_str.find("err2"), std::string::npos);
-    auto joined_vec = joined->GetJoined();
-    EXPECT_EQ(joined_vec.size(), 2);
-    EXPECT_EQ(joined_vec[0], e1);
-    EXPECT_EQ(joined_vec[1], e2);
+    auto joinedStr = joined->What();
+    EXPECT_NE(joinedStr.find("err1"), std::string::npos);
+    EXPECT_NE(joinedStr.find("err2"), std::string::npos);
+    auto joinedVec = joined->GetJoined();
+    EXPECT_EQ(joinedVec.size(), 2);
+    EXPECT_EQ(joinedVec[0], e1);
+    EXPECT_EQ(joinedVec[1], e2);
 }
 
 TEST(ErrorsTests, JoinFiltersNullptr)
