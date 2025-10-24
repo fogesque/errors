@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 project(errors VERSION 1.0.1 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Header-only library target
 add_library(errors INTERFACE)
@@ -53,14 +56,14 @@ install(FILES
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/errors
 )
 
-# Build examples and tests (optional, controlled by option)
+# Build samples and tests (optional, controlled by option)
 option(ERRORS_BUILD_TESTS "Build tests" OFF)
-option(ERRORS_BUILD_EXAMPLES "Build examples" OFF)
+option(ERRORS_BUILD_SAMPLES "Build samples" OFF)
 
 if(ERRORS_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-if(ERRORS_BUILD_EXAMPLES)
-    add_subdirectory(examples)
+if(ERRORS_BUILD_SAMPLES)
+    add_subdirectory(samples)
 endif()
